@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, MapPin, AlertTriangle, UserX, ChevronRight, Phone, BellRing, LocateFixed, RefreshCw } from "lucide-react";
+import { Users, MapPin, AlertTriangle, UserX, ChevronRight, Phone, BellRing, LocateFixed, RefreshCw, X } from "lucide-react";
 import { useGetDashboardStats, useGetBreachChart, useListPersonnel, useListAlerts, useAcknowledgeAlert } from "@workspace/api-client-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { cn } from "@/lib/utils";
@@ -292,5 +292,3 @@ function StatusBadge({ status, className }: { status: string, className?: string
   );
 }
 
-// Need this missing icon for the panel close button
-import { X } from "lucide-react";

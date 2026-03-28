@@ -1,22 +1,37 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: NETRA Smart Bandobusth Duty Monitoring System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: personnel
+    description: Personnel management
+  - name: locations
+    description: Officer location tracking
+  - name: alerts
+    description: Alert and incident management
+  - name: dashboard
+    description: Dashboard statistics
+  - name: attendance
+    description: Attendance and check-in/out
+  - name: demo
+    description: Demo mode operations
+  - name: announcements
+    description: Broadcast announcements
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +39,406 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/send-otp:
+    post:
+      operationId: sendOtp
+      tags: [auth]
+      summary: Send OTP to officer mobile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendOtpRequest"
+      responses:
+        "200":
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendOtpResponse"
+
+  /auth/verify-otp:
+    post:
+      operationId: verifyOtp
+      tags: [auth]
+      summary: Verify OTP and login as officer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyOtpRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/admin-login:
+    post:
+      operationId: adminLogin
+      tags: [auth]
+      summary: Admin login with username and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /personnel:
+    get:
+      operationId: listPersonnel
+      tags: [personnel]
+      summary: List all officers
+      responses:
+        "200":
+          description: Officer list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Officer"
+    post:
+      operationId: createOfficer
+      tags: [personnel]
+      summary: Add a new officer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOfficerRequest"
+      responses:
+        "201":
+          description: Officer created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Officer"
+
+  /personnel/{id}:
+    get:
+      operationId: getOfficer
+      tags: [personnel]
+      summary: Get officer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Officer details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Officer"
+
+  /locations:
+    get:
+      operationId: listLocations
+      tags: [locations]
+      summary: Get all officer current locations
+      responses:
+        "200":
+          description: Location list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OfficerLocation"
+
+  /locations/{officerId}:
+    put:
+      operationId: updateLocation
+      tags: [locations]
+      summary: Update officer location
+      parameters:
+        - name: officerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLocationRequest"
+      responses:
+        "200":
+          description: Location updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OfficerLocation"
+
+  /alerts:
+    get:
+      operationId: listAlerts
+      tags: [alerts]
+      summary: List alerts
+      parameters:
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [L1, L2, L3]
+        - name: limit
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Alert list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Alert"
+    post:
+      operationId: createAlert
+      tags: [alerts]
+      summary: Create a new alert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAlertRequest"
+      responses:
+        "201":
+          description: Alert created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alert"
+
+  /alerts/{id}/acknowledge:
+    post:
+      operationId: acknowledgeAlert
+      tags: [alerts]
+      summary: Acknowledge an alert
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Alert acknowledged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alert"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard statistics
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/breach-chart:
+    get:
+      operationId: getBreachChart
+      tags: [dashboard]
+      summary: Get hourly breach counts for today
+      responses:
+        "200":
+          description: Breach chart data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HourlyBreachCount"
+
+  /attendance:
+    get:
+      operationId: listAttendance
+      tags: [attendance]
+      summary: List today's attendance records
+      responses:
+        "200":
+          description: Attendance list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttendanceRecord"
+    post:
+      operationId: createAttendance
+      tags: [attendance]
+      summary: Mark attendance (check-in)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAttendanceRequest"
+      responses:
+        "201":
+          description: Attendance marked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttendanceRecord"
+
+  /attendance/face-verify:
+    post:
+      operationId: faceVerify
+      tags: [attendance]
+      summary: Face verification for attendance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaceVerifyRequest"
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FaceVerifyResponse"
+
+  /duties:
+    get:
+      operationId: listDuties
+      tags: [attendance]
+      summary: Get duty assignments for print
+      responses:
+        "200":
+          description: Duty list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DutyAssignment"
+
+  /announcements:
+    get:
+      operationId: listAnnouncements
+      tags: [announcements]
+      summary: List recent announcements
+      responses:
+        "200":
+          description: Announcement list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Announcement"
+    post:
+      operationId: createAnnouncement
+      tags: [announcements]
+      summary: Broadcast an announcement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAnnouncementRequest"
+      responses:
+        "201":
+          description: Announcement created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Announcement"
+
+  /demo/trigger-breach:
+    post:
+      operationId: demoBreach
+      tags: [demo]
+      summary: Demo - trigger a breach for P003
+      responses:
+        "200":
+          description: Breach triggered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /demo/escalate-l3:
+    post:
+      operationId: demoEscalateL3
+      tags: [demo]
+      summary: Demo - escalate P003 alert to L3
+      responses:
+        "200":
+          description: Escalated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /demo/reset:
+    post:
+      operationId: demoReset
+      tags: [demo]
+      summary: Demo - reset all demo changes
+      responses:
+        "200":
+          description: Reset complete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /sms:
+    post:
+      operationId: sendSms
+      tags: [auth]
+      summary: Send SMS (simulated in demo)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SmsRequest"
+      responses:
+        "200":
+          description: SMS sent (simulated)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +449,410 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    SendOtpRequest:
+      type: object
+      properties:
+        mobile:
+          type: string
+      required:
+        - mobile
+
+    SendOtpResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        otp:
+          type: string
+          description: OTP for demo display
+      required:
+        - message
+        - otp
+
+    VerifyOtpRequest:
+      type: object
+      properties:
+        mobile:
+          type: string
+        otp:
+          type: string
+        officerId:
+          type: string
+      required:
+        - mobile
+        - otp
+
+    AdminLoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        role:
+          type: string
+          enum: [officer, admin]
+        officerId:
+          type: string
+        name:
+          type: string
+      required:
+        - token
+        - role
+
+    Officer:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        rank:
+          type: string
+          enum: [Constable, SI, CI, DSP]
+        mobile:
+          type: string
+        zone:
+          type: string
+        status:
+          type: string
+          enum: [IN_ZONE, BREACH, LATE, OFFLINE]
+        compliance:
+          type: number
+        breachCount:
+          type: number
+        timeInZoneToday:
+          type: number
+        checkInTime:
+          type: string
+          nullable: true
+        lastSeen:
+          type: string
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+      required:
+        - id
+        - name
+        - rank
+        - mobile
+        - zone
+        - status
+        - compliance
+        - breachCount
+        - timeInZoneToday
+
+    CreateOfficerRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        rank:
+          type: string
+          enum: [Constable, SI, CI, DSP]
+        mobile:
+          type: string
+        zone:
+          type: string
+      required:
+        - name
+        - rank
+        - mobile
+        - zone
+
+    OfficerLocation:
+      type: object
+      properties:
+        officerId:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        status:
+          type: string
+          enum: [IN_ZONE, BREACH, LATE, OFFLINE]
+        updatedAt:
+          type: string
+      required:
+        - officerId
+        - latitude
+        - longitude
+        - status
+        - updatedAt
+
+    UpdateLocationRequest:
+      type: object
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+      required:
+        - latitude
+        - longitude
+
+    Alert:
+      type: object
+      properties:
+        id:
+          type: number
+        type:
+          type: string
+        level:
+          type: string
+          enum: [L1, L2, L3]
+        officerId:
+          type: string
+        officerName:
+          type: string
+        zone:
+          type: string
+        message:
+          type: string
+        acknowledged:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - type
+        - level
+        - officerId
+        - officerName
+        - zone
+        - message
+        - acknowledged
+        - createdAt
+
+    CreateAlertRequest:
+      type: object
+      properties:
+        type:
+          type: string
+        level:
+          type: string
+          enum: [L1, L2, L3]
+        officerId:
+          type: string
+        zone:
+          type: string
+        message:
+          type: string
+        severity:
+          type: string
+          nullable: true
+      required:
+        - type
+        - level
+        - officerId
+        - zone
+        - message
+
+    DashboardStats:
+      type: object
+      properties:
+        totalAssigned:
+          type: number
+        inZone:
+          type: number
+        violations:
+          type: number
+        notPresent:
+          type: number
+      required:
+        - totalAssigned
+        - inZone
+        - violations
+        - notPresent
+
+    HourlyBreachCount:
+      type: object
+      properties:
+        hour:
+          type: number
+        count:
+          type: number
+      required:
+        - hour
+        - count
+
+    AttendanceRecord:
+      type: object
+      properties:
+        id:
+          type: number
+        officerId:
+          type: string
+        officerName:
+          type: string
+        checkIn:
+          type: string
+          nullable: true
+        checkOut:
+          type: string
+          nullable: true
+        date:
+          type: string
+        method:
+          type: string
+      required:
+        - id
+        - officerId
+        - officerName
+        - date
+        - method
+
+    CreateAttendanceRequest:
+      type: object
+      properties:
+        officerId:
+          type: string
+        method:
+          type: string
+      required:
+        - officerId
+        - method
+
+    FaceVerifyRequest:
+      type: object
+      properties:
+        officerId:
+          type: string
+        image:
+          type: string
+          description: Base64 image data
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+      required:
+        - officerId
+        - image
+
+    FaceVerifyResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        officerName:
+          type: string
+        confidence:
+          type: number
+        timestamp:
+          type: string
+        message:
+          type: string
+      required:
+        - success
+        - officerName
+        - confidence
+        - timestamp
+        - message
+
+    DutyAssignment:
+      type: object
+      properties:
+        serialNumber:
+          type: number
+        officerId:
+          type: string
+        name:
+          type: string
+        rank:
+          type: string
+        zone:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        shiftStart:
+          type: string
+        shiftEnd:
+          type: string
+        zoneRadius:
+          type: number
+      required:
+        - serialNumber
+        - officerId
+        - name
+        - rank
+        - zone
+        - latitude
+        - longitude
+        - shiftStart
+        - shiftEnd
+        - zoneRadius
+
+    Announcement:
+      type: object
+      properties:
+        id:
+          type: number
+        message:
+          type: string
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+      required:
+        - id
+        - message
+        - createdAt
+        - createdBy
+
+    CreateAnnouncementRequest:
+      type: object
+      properties:
+        message:
+          type: string
+        createdBy:
+          type: string
+      required:
+        - message
+        - createdBy
+
+    SmsRequest:
+      type: object
+      properties:
+        to:
+          type: string
+        message:
+          type: string
+      required:
+        - to
+        - message

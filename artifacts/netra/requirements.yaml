@@ -1,0 +1,12 @@
+packages:
+  "leaflet": "Interactive maps"
+  "@types/leaflet": "TypeScript definitions for Leaflet"
+  "react-leaflet": "React components for Leaflet maps"
+  "socket.io-client": "Real-time updates for tracking and alerts"
+  "framer-motion": "Smooth page transitions and component animations"
+  "recharts": "Dashboard analytics charts"
+  "react-hot-toast": "Beautiful toast notifications"
+  "lucide-react": "Clean icons for UI"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility function to efficiently merge Tailwind CSS classes"
+  "date-fns": "Date formatting"

@@ -69,7 +69,7 @@ export function OfficerHome() {
   const compliance = officer?.compliance ?? 0;
 
   return (
-    <div className="space-y-4 pb-32">
+    <div className="space-y-4 pb-4">
 
       {/* Welcome + Status Card */}
       <div className="bg-card rounded-2xl p-5 border border-border shadow-sm relative overflow-hidden">
@@ -201,16 +201,19 @@ export function OfficerHome() {
         </div>
       </div>
 
-      {/* SOS Floating Button */}
-      <div className="fixed bottom-24 right-4 z-40">
+      {/* SOS — inline emergency section */}
+      <div className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4 flex items-center gap-4">
+        <div className="flex-1">
+          <p className="font-bold text-destructive text-sm">Emergency Panic Alert</p>
+          <p className="text-xs text-destructive/70 mt-0.5">Immediately notifies SP Office &amp; Command Center with your GPS location.</p>
+        </div>
         <motion.button
           whileTap={{ scale: 0.92 }}
           onClick={() => setSosOpen(true)}
-          className="w-16 h-16 bg-destructive text-white rounded-full shadow-[0_0_24px_rgba(220,38,38,0.55)] flex items-center justify-center font-bold text-sm tracking-widest border-4 border-white"
+          className="w-16 h-16 bg-destructive text-white rounded-full shadow-[0_0_20px_rgba(220,38,38,0.5)] flex items-center justify-center font-black text-sm tracking-widest border-4 border-white shrink-0"
         >
           SOS
         </motion.button>
-        <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-bold text-muted-foreground whitespace-nowrap">EMERGENCY</span>
       </div>
 
       {/* SOS Modal */}

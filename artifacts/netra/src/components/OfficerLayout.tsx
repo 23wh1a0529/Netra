@@ -1,17 +1,32 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { Home, ScanFace, LogOut, Camera } from "lucide-react";
+import { Home, ScanFace, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
+// Unique crosshair-scope icon for the field camera
+function ScopeIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="12" r="3" />
+      <circle cx="12" cy="12" r="7" />
+      <line x1="12" y1="1" x2="12" y2="5" />
+      <line x1="12" y1="19" x2="12" y2="23" />
+      <line x1="1" y1="12" x2="5" y2="12" />
+      <line x1="19" y1="12" x2="23" y2="12" />
+    </svg>
+  );
+}
+
 export function OfficerLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const { logout, name } = useAuth();
+  const { logout } = useAuth();
 
   const navItems = [
-    { href: "/officer",             icon: Home,     label: "Home"       },
-    { href: "/officer/camera",      icon: Camera,   label: "Camera"     },
-    { href: "/officer/face-verify", icon: ScanFace, label: "Attendance" },
+    { href: "/officer",             label: "Home",      renderIcon: (active: boolean) => <Home className={cn("w-6 h-6", active && "fill-current/10")} /> },
+    { href: "/officer/camera",      label: "Capture",   renderIcon: () => <ScopeIcon className="w-6 h-6" /> },
+    { href: "/officer/face-verify", label: "Attendance",renderIcon: () => <ScanFace className="w-6 h-6" /> },
   ];
 
   return (
@@ -43,7 +58,7 @@ export function OfficerLayout({ children }: { children: React.ReactNode }) {
 
         {/* Bottom Nav */}
         <nav className="absolute bottom-0 left-0 right-0 h-20 bg-card border-t border-border flex items-center justify-center px-4 gap-2 pb-safe z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] rounded-t-2xl">
-          {navItems.map(({ href, icon: Icon, label }) => {
+          {navItems.map(({ href, label, renderIcon }) => {
             const active = location === href;
             return (
               <Link
@@ -56,7 +71,7 @@ export function OfficerLayout({ children }: { children: React.ReactNode }) {
                     : "text-muted-foreground hover:bg-secondary"
                 )}
               >
-                <Icon className="w-6 h-6" />
+                {renderIcon(active)}
                 <span className="text-xs font-bold">{label}</span>
               </Link>
             );

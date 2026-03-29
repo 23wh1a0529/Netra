@@ -159,6 +159,9 @@ node dist/server.js
 
 ---
 
+## 🌐 Live Demo
+https://netra-smart-personnel--sivadurga1985g.replit.app
+
 ## ⭐ Support
 
 If you believe in smarter policing systems, give this project a ⭐

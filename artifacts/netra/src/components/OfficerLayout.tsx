@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { Home, ScanFace, LogOut } from "lucide-react";
+import { Home, ScanFace, LogOut, Camera } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -8,10 +8,16 @@ export function OfficerLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const { logout, name } = useAuth();
 
+  const navItems = [
+    { href: "/officer",             icon: Home,     label: "Home"       },
+    { href: "/officer/camera",      icon: Camera,   label: "Camera"     },
+    { href: "/officer/face-verify", icon: ScanFace, label: "Attendance" },
+  ];
+
   return (
     <div className="min-h-screen bg-background flex justify-center">
       <div className="w-full max-w-[480px] bg-card min-h-screen shadow-2xl relative flex flex-col">
-        
+
         {/* Top Bar */}
         <header className="h-16 border-b border-border flex items-center justify-between px-4 shrink-0 bg-primary/5">
           <div className="flex items-center gap-2">
@@ -36,22 +42,25 @@ export function OfficerLayout({ children }: { children: React.ReactNode }) {
         </main>
 
         {/* Bottom Nav */}
-        <nav className="absolute bottom-0 left-0 right-0 h-20 bg-card border-t border-border flex items-center justify-center px-4 gap-4 pb-safe z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] rounded-t-2xl">
-          <Link href="/officer" className={cn(
-            "flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all",
-            location === "/officer" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 -translate-y-2" : "text-muted-foreground hover:bg-secondary"
-          )}>
-            <Home className="w-6 h-6" />
-            <span className="text-xs font-bold">Home</span>
-          </Link>
-          
-          <Link href="/officer/face-verify" className={cn(
-            "flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all",
-            location === "/officer/face-verify" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 -translate-y-2" : "text-muted-foreground hover:bg-secondary"
-          )}>
-            <ScanFace className="w-6 h-6" />
-            <span className="text-xs font-bold">Attendance</span>
-          </Link>
+        <nav className="absolute bottom-0 left-0 right-0 h-20 bg-card border-t border-border flex items-center justify-center px-4 gap-2 pb-safe z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] rounded-t-2xl">
+          {navItems.map(({ href, icon: Icon, label }) => {
+            const active = location === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  "flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl transition-all",
+                  active
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 -translate-y-2"
+                    : "text-muted-foreground hover:bg-secondary"
+                )}
+              >
+                <Icon className="w-6 h-6" />
+                <span className="text-xs font-bold">{label}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </div>

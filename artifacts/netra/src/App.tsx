@@ -13,6 +13,7 @@ import { AlertsPage } from "@/pages/admin/alerts";
 import { AnnouncementsPage } from "@/pages/admin/announcements";
 import { OfficerHome } from "@/pages/officer/home";
 import { FaceVerifyPage } from "@/pages/officer/face-verify";
+import { OfficerCameraPage } from "@/pages/officer/camera";
 import { AdminLayout } from "@/components/AdminLayout";
 import { OfficerLayout } from "@/components/OfficerLayout";
 import NotFound from "@/pages/not-found";
@@ -75,6 +76,9 @@ function Router() {
       </Route>
       <Route path="/officer/face-verify">
         <OfficerRoute component={FaceVerifyPage} />
+      </Route>
+      <Route path="/officer/camera">
+        <OfficerRoute component={OfficerCameraPage} />
       </Route>
 
       <Route component={NotFound} />

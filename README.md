@@ -1,7 +1,5 @@
-````md
 # 🚓 NETRA
-
-> Smart Monitoring & Emergency Response System for Anantapur Police
+Smart Monitoring & Emergency Response System for Anantapur Police
 
 [🌐 Live Demo](https://netra-smart-personnel--sivadurga1985g.replit.app) 
 
